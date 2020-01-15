@@ -1,0 +1,52 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using TodoApp.Domain.Entities;
+using TodoApp.Domain.Interface;
+
+namespace TodoApp.Persistance.Repository
+{
+    public class CategoryRepository : IGenericRepository<Category>
+    {
+        private readonly TodoAppDbContext _context;
+
+        public CategoryRepository(TodoAppDbContext context)
+        {
+            _context = context;
+        }
+        public async Task Add(Category entity)
+        {
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Delete(Category entity)
+        {
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Category>> GetAll()
+        {
+            var categories = await _context.Categories.Include(c => c.SubCategories).ToListAsync();
+            return categories;
+        }
+
+        public async Task<Category> GetById(Guid id)
+        {
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            if (category == null)
+                return null;
+            return category;
+        }
+
+        public async Task Update(Category entity)
+        {
+            _context.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+    }
+}
+
