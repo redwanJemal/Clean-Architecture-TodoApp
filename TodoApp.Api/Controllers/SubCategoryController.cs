@@ -9,11 +9,11 @@ using TodoApp.Application.ViewModel;
 namespace TodoApp.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class SubCategoryController: Controller
+    public class SubCategoryController : Controller
     {
-        private readonly IGenericService<SubCategoryModel> _service;
+        private readonly ISubCategoryService _service;
 
-        public SubCategoryController(IGenericService<SubCategoryModel> service)
+        public SubCategoryController(ISubCategoryService service)
         {
             _service = service;
         }
@@ -24,10 +24,22 @@ namespace TodoApp.Api.Controllers
             return Ok(model);
         }
         [HttpGet("get-all")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery]UserParamsModel userParams)
         {
-            var subCategories = await _service.GetAll();
-            return Ok(subCategories);
+            var categories = await _service.GetAll(userParams);
+            Response.AddPaginationHeader(categories.CurrentPage, userParams.PageSize, categories.TotalItems, categories.TotalPage);
+
+            return Ok(categories);
+        }
+
+
+        [HttpGet("get-by-category-id/{id}")]
+        public async Task<IActionResult> GetByCategoryId(Guid id, [FromQuery]UserParamsModel userParams)
+        {
+            var categories = await _service.GetByCategoryId(id, userParams);
+            Response.AddPaginationHeader(categories.CurrentPage, userParams.PageSize, categories.TotalItems, categories.TotalPage);
+
+            return Ok(categories);
         }
 
         [HttpPost("get-ById/{id}")]
