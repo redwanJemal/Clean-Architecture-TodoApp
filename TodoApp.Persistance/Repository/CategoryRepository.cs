@@ -32,7 +32,9 @@ namespace TodoApp.Persistance.Repository
 
         public async Task<List<Category>> GetAll()
         {
-            var categories = await _context.Categories.Include(c => c.SubCategories).ToListAsync();
+            var categories = await _context.Categories.
+                Include(c => c.SubCategories)
+                .ToListAsync();
             return categories;
         }
 

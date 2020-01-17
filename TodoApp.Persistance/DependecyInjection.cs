@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using TodoApp.Application.Helpers;
 using TodoApp.Application.Services;
+using TodoApp.Application.Services.Interfce;
 using TodoApp.Application.ViewModel;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
@@ -33,6 +34,9 @@ namespace TodoApp.Persistance
 
             services.AddScoped<ISubCategoryService, SubCategoryService>();
             services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+
+            services.AddScoped<ITodoService, TodoService>();
+            services.AddScoped<ITodoRepository, TodoRepository>();
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new AutoMapperProfile());

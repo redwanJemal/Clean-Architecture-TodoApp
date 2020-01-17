@@ -49,7 +49,11 @@ namespace TodoApp.Persistance.Repository
 
         public async Task<SubCategory> GetById(Guid id)
         {
-            var category = await _context.SubCategories.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _context.SubCategories
+                .Include(s => s.Notes)
+                .Include(s => s.Todos)
+                .Include(s => s.Linkes)
+                .Include(s => s.Files).FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
                 return null;
             return category;
