@@ -46,7 +46,7 @@ namespace TodoApp.Api.Controllers
             return NoContent();
         }
 
-        [HttpPost("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _service.Delete(id);

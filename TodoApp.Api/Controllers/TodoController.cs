@@ -4,21 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoApp.Application.Services;
+using TodoApp.Application.Services.Interfce;
 using TodoApp.Application.ViewModel;
 
 namespace TodoApp.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class SubCategoryController : Controller
+    [Route("api/todo/")]
+    public class TodoController : Controller
     {
-        private readonly ISubCategoryService _service;
+        private readonly ITodoService _service;
 
-        public SubCategoryController(ISubCategoryService service)
+        public TodoController(ITodoService service)
         {
             _service = service;
         }
-        [HttpPost("add-subCategory")]
-        public async Task<IActionResult> Create([FromBody]SubCategoryModel model)
+        [HttpPost("add-todo")]
+        public async Task<IActionResult> Create([FromBody]TodoModel model)
         {
             await _service.Add(model);
             return Ok(model);
@@ -33,16 +34,16 @@ namespace TodoApp.Api.Controllers
         }
 
 
-        [HttpGet("get-by-category-id/{id}")]
+        [HttpGet("get-by-sub-category-id/{id}")]
         public async Task<IActionResult> GetByCategoryId(Guid id, [FromQuery]UserParamsModel userParams)
         {
-            var categories = await _service.GetByCategoryId(id, userParams);
+            var categories = await _service.GetBySubCategoryId(id, userParams);
             Response.AddPaginationHeader(categories.CurrentPage, userParams.PageSize, categories.TotalItems, categories.TotalPage);
 
             return Ok(categories);
         }
 
-        [HttpPost("get-ById/{id}")]
+        [HttpPost("get-by-Id/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var subCategory = await _service.GetById(id);
@@ -50,7 +51,7 @@ namespace TodoApp.Api.Controllers
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]SubCategoryModel model)
+        public async Task<IActionResult> Update(Guid id, [FromBody]TodoModel model)
         {
             await _service.Update(model);
             return NoContent();
