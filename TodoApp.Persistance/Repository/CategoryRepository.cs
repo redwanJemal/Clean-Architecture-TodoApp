@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
+using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
@@ -37,8 +39,6 @@ namespace TodoApp.Persistance.Repository
         public async Task<Category> GetById(Guid id)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-            if (category == null)
-                return null;
             return category;
         }
 
@@ -46,6 +46,17 @@ namespace TodoApp.Persistance.Repository
         {
             _context.Update(entity);
             await _context.SaveChangesAsync();
+        }
+        public async Task<QueryResult<Category>> GetAll(UserParams userParams)
+        {
+            var query = _context.Categories
+               .Include(c => c.SubCategories)
+               .AsQueryable();
+            var categories = _context.Categories.Include(c => c.SubCategories);
+
+            var result = await PagedList<Category>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
+
+            return result;
         }
     }
 }

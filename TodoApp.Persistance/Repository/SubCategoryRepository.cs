@@ -1,14 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
+using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class SubCategoryRepository : IGenericRepository<SubCategory>
+    public class SubCategoryRepository : ISubCategoryRepository
     {
         private readonly TodoAppDbContext _context;
 
@@ -34,12 +36,35 @@ namespace TodoApp.Persistance.Repository
             return categories;
         }
 
+        public async Task<QueryResult<SubCategory>> GetAll(UserParams userParams)
+        {
+            var query = _context.SubCategories
+                .Include(s => s.Notes)
+                .Include(s => s.Todos).AsQueryable();
+
+            var result = await PagedList<SubCategory>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
+
+            return result;
+        }
+
         public async Task<SubCategory> GetById(Guid id)
         {
             var category = await _context.SubCategories.FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
                 return null;
             return category;
+        }
+
+        public async Task<QueryResult<SubCategory>> GetByCategoryId(Guid Id, UserParams userParams)
+        {
+            var query = _context.SubCategories.
+                Where(s => s.CategoryId == Id)
+                .Include(s => s.Notes)
+                .Include(s => s.Todos).AsQueryable();
+
+            var result = await PagedList<SubCategory>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
+
+            return result;
         }
 
         public async Task Update(SubCategory entity)

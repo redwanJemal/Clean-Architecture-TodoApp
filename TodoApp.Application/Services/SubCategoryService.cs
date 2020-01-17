@@ -9,17 +9,18 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class SubCategoryService : IGenericService<SubCategoryModel>
+    public class SubCategoryService : ISubCategoryService
     {
-        private readonly IGenericRepository<SubCategory> _repo;
+        private readonly ISubCategoryRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public SubCategoryService(IGenericRepository<SubCategory> repo, IMapper mapper)
+        public SubCategoryService(ISubCategoryRepository repo, IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;
         }
+
         public async Task Add(SubCategoryModel entity)
         {
             var newCategory = _mapper.Map<SubCategory>(entity);
@@ -32,11 +33,32 @@ namespace TodoApp.Application.Services
             await _repo.Delete(category);
         }
 
-        public async Task<List<SubCategoryModel>> GetAll()
+        public async Task<QueryResult<SubCategoryModel>> GetAll(UserParamsModel userParams)
         {
-            var subCategories = await _repo.GetAll();
-            List<SubCategoryModel> subCategoryModels = _mapper.Map<List<SubCategory>, List<SubCategoryModel>>(subCategories);
-            return subCategoryModels;
+            var result = new QueryResult<SubCategoryModel>();
+            var subCategories = await _repo.GetAll(_mapper.Map<UserParams>(userParams));
+
+            List<SubCategoryModel> categoryModels = _mapper.Map<List<SubCategory>, List<SubCategoryModel>>(subCategories.Items);
+
+            result.Items = categoryModels;
+            result.TotalItems = subCategories.TotalItems;
+            result.CurrentPage = subCategories.CurrentPage;
+            result.TotalPage = subCategories.TotalPage;
+
+            return result;
+        }
+        public async Task<QueryResult<SubCategoryModel>> GetByCategoryId(Guid Id, UserParamsModel userParams)
+        {
+            var result = new QueryResult<SubCategoryModel>();
+            var subCategories = await _repo.GetByCategoryId(Id, _mapper.Map<UserParams>(userParams));
+            List<SubCategoryModel> categoryModels = _mapper.Map<List<SubCategory>, List<SubCategoryModel>>(subCategories.Items);
+
+            result.Items = categoryModels;
+            result.TotalItems = subCategories.TotalItems;
+            result.CurrentPage = subCategories.CurrentPage;
+            result.TotalPage = subCategories.TotalPage;
+
+            return result;
         }
 
         public async Task<SubCategoryModel> GetById(Guid id)

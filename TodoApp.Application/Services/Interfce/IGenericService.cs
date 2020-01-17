@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using TodoApp.Application.ViewModel;
 using TodoApp.Domain.Entities;
 
-namespace TodoApp.Domain.Interface
+namespace TodoApp.Application.Services
 {
-    public interface IGenericRepository<T>
+    public interface IGenericService<T>
     {
-        Task<QueryResult<T>> GetAll(UserParams userParams);
         Task<List<T>> GetAll();
+        Task<QueryResult<T>> GetAll(UserParamsModel userParams);
         Task<T> GetById(Guid id);
         Task Add(T entity);
         Task Update(T entity);
-        Task Delete(T entity);
+        Task Delete(Guid id);
     }
 }

@@ -31,9 +31,8 @@ namespace TodoApp.Persistance
             services.AddScoped<IGenericService<CategoryModel>, CategoryService>();
             services.AddScoped<IGenericRepository<Category>, CategoryRepository>();
 
-            services.AddScoped<IGenericService<SubCategoryModel>, SubCategoryService>();
-            services.AddScoped<IGenericRepository<SubCategory>, SubCategoryRepository>();
-
+            services.AddScoped<ISubCategoryService, SubCategoryService>();
+            services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new AutoMapperProfile());

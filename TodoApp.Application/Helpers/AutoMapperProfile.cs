@@ -16,6 +16,7 @@ namespace TodoApp.Application.Helpers
             CreateMap<Todo, TodoModel>().ReverseMap();
             CreateMap<Note, NoteModel>().ReverseMap();
             CreateMap<Link, LinkModel>().ReverseMap();
+            CreateMap<UserParams, UserParamsModel>().ReverseMap(); 
             CreateMap<File, FileModel>().ReverseMap();
 
         }
