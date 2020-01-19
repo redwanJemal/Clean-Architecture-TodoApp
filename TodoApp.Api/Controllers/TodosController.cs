@@ -10,11 +10,11 @@ using TodoApp.Application.ViewModel;
 namespace TodoApp.Api.Controllers
 {
     [Route("api/todo/")]
-    public class TodoController : Controller
+    public class TodosController : Controller
     {
         private readonly ITodoService _service;
 
-        public TodoController(ITodoService service)
+        public TodosController(ITodoService service)
         {
             _service = service;
         }

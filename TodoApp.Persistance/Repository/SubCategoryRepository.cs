@@ -30,17 +30,9 @@ namespace TodoApp.Persistance.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<SubCategory>> GetAll()
-        {
-            var categories = await _context.SubCategories.ToListAsync();
-            return categories;
-        }
-
         public async Task<QueryResult<SubCategory>> GetAll(UserParams userParams)
         {
-            var query = _context.SubCategories
-                .Include(s => s.Notes)
-                .Include(s => s.Todos).AsQueryable();
+            var query = _context.SubCategories.AsQueryable();
 
             var result = await PagedList<SubCategory>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
@@ -54,8 +46,7 @@ namespace TodoApp.Persistance.Repository
                 .Include(s => s.Todos)
                 .Include(s => s.Linkes)
                 .Include(s => s.Files).FirstOrDefaultAsync(c => c.Id == id);
-            if (category == null)
-                return null;
+            
             return category;
         }
 

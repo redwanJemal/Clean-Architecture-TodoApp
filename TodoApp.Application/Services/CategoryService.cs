@@ -9,15 +9,15 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class CategoryService : IGenericService<CategoryModel>
+    public class CategoryService : ICategoryService
     {
-        private readonly IGenericRepository<Category> _repo;
+        private readonly ICategoryRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public CategoryService(IGenericRepository<Category> categoryRepository, IMapper mapper)
+        public CategoryService(ICategoryRepository repo, IMapper mapper)
         {
-            _repo = categoryRepository;
+            _repo = repo;
             _mapper = mapper;
         }
         public async Task Add(CategoryModel entity)
@@ -30,13 +30,6 @@ namespace TodoApp.Application.Services
         {
             var category = await _repo.GetById(id);
             await _repo.Delete(category);
-        }
-
-        public async Task<List<CategoryModel>> GetAll()
-        {
-            var categories = await _repo.GetAll();
-            List<CategoryModel> categoryModels = _mapper.Map<List<Category>, List<CategoryModel>>(categories);
-            return categoryModels;
         }
 
         public async Task<QueryResult<CategoryModel>> GetAll(UserParamsModel userParams)
@@ -54,10 +47,10 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public async Task<CategoryModel> GetById(Guid id)
+        public async Task<CategoryDetailModel> GetById(Guid id)
         {
             var category = await _repo.GetById(id);
-            return _mapper.Map<CategoryModel>(category);
+            return _mapper.Map<CategoryDetailModel>(category);
         }
 
         public async Task Update(CategoryModel entity)

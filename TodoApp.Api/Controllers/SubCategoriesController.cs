@@ -8,20 +8,20 @@ using TodoApp.Application.ViewModel;
 
 namespace TodoApp.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class CategoryController : Controller
+    [Route("api/subcategory/")]
+    public class SubCategoriesController : Controller
     {
-        private readonly IGenericService<CategoryModel> _service;
+        private readonly ISubCategoryService _service;
 
-        public CategoryController(IGenericService<CategoryModel> service)
+        public SubCategoriesController(ISubCategoryService service)
         {
             _service = service;
         }
-        [HttpPost("add-category")]
-        public async Task<IActionResult> Create([FromBody]CategoryModel categoryModel)
+        [HttpPost("add")]
+        public async Task<IActionResult> Create([FromBody]SubCategoryModel model)
         {
-            await _service.Add(categoryModel);
-            return Ok(categoryModel);
+            await _service.Add(model);
+            return Ok(model);
         }
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll([FromQuery]UserParamsModel userParams)
@@ -32,17 +32,27 @@ namespace TodoApp.Api.Controllers
             return Ok(categories);
         }
 
-        [HttpPost("get-ById/{id}")]
+
+        [HttpGet("get-by-category-id/{id}")]
+        public async Task<IActionResult> GetByCategoryId(Guid id, [FromQuery]UserParamsModel userParams)
+        {
+            var categories = await _service.GetByCategoryId(id, userParams);
+            Response.AddPaginationHeader(categories.CurrentPage, userParams.PageSize, categories.TotalItems, categories.TotalPage);
+
+            return Ok(categories);
+        }
+
+        [HttpPost("get-by-id/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var category = await _service.GetById(id);
-            return Ok(category);
+            var subCategory = await _service.GetById(id);
+            return Ok(subCategory);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]CategoryModel categoryModel)
+        public async Task<IActionResult> Update(Guid id, [FromBody]SubCategoryModel model)
         {
-            await _service.Update(categoryModel);
+            await _service.Update(model);
             return NoContent();
         }
 

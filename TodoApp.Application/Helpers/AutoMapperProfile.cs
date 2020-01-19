@@ -12,6 +12,7 @@ namespace TodoApp.Application.Helpers
         public AutoMapperProfile()
         {
             CreateMap<Category, CategoryModel>().ReverseMap();
+            CreateMap<Category, CategoryDetailModel>().ReverseMap();
             CreateMap<SubCategory, SubCategoryModel>().ReverseMap();
             CreateMap<Todo, TodoModel>().ReverseMap();
             CreateMap<Note, NoteModel>().ReverseMap();

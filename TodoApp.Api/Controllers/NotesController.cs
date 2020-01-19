@@ -4,21 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoApp.Application.Services;
+using TodoApp.Application.Services.Interfce;
 using TodoApp.Application.ViewModel;
 
 namespace TodoApp.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class SubCategoryController : Controller
+    [Route("api/note/")]
+    public class NoteController : Controller
     {
-        private readonly ISubCategoryService _service;
+        private readonly INoteService _service;
 
-        public SubCategoryController(ISubCategoryService service)
+        public NoteController(INoteService service)
         {
             _service = service;
         }
-        [HttpPost("add-subCategory")]
-        public async Task<IActionResult> Create([FromBody]SubCategoryModel model)
+        [HttpPost("add-note")]
+        public async Task<IActionResult> Create([FromBody]NoteModel model)
         {
             await _service.Add(model);
             return Ok(model);
@@ -26,31 +27,31 @@ namespace TodoApp.Api.Controllers
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll([FromQuery]UserParamsModel userParams)
         {
-            var categories = await _service.GetAll(userParams);
-            Response.AddPaginationHeader(categories.CurrentPage, userParams.PageSize, categories.TotalItems, categories.TotalPage);
+            var entities = await _service.GetAll(userParams);
+            Response.AddPaginationHeader(entities.CurrentPage, userParams.PageSize, entities.TotalItems, entities.TotalPage);
 
-            return Ok(categories);
+            return Ok(entities);
         }
 
 
-        [HttpGet("get-by-category-id/{id}")]
+        [HttpGet("get-by-sub-category-id/{id}")]
         public async Task<IActionResult> GetByCategoryId(Guid id, [FromQuery]UserParamsModel userParams)
         {
-            var categories = await _service.GetByCategoryId(id, userParams);
-            Response.AddPaginationHeader(categories.CurrentPage, userParams.PageSize, categories.TotalItems, categories.TotalPage);
+            var entities = await _service.GetBySubCategoryId(id, userParams);
+            Response.AddPaginationHeader(entities.CurrentPage, userParams.PageSize, entities.TotalItems, entities.TotalPage);
 
-            return Ok(categories);
+            return Ok(entities);
         }
 
-        [HttpPost("get-ById/{id}")]
+        [HttpPost("get-by-Id/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var subCategory = await _service.GetById(id);
-            return Ok(subCategory);
+            var entity = await _service.GetById(id);
+            return Ok(entity);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]SubCategoryModel model)
+        public async Task<IActionResult> Update(Guid id, [FromBody]NoteModel model)
         {
             await _service.Update(model);
             return NoContent();
