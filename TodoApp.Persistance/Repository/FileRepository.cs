@@ -10,53 +10,53 @@ using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class TodoRepository : ITodoRepository
+    public class FileRepository : IFileRepository
     {
         private readonly TodoAppDbContext _context;
 
-        public TodoRepository(TodoAppDbContext context)
+        public FileRepository(TodoAppDbContext context)
         {
             _context = context;
         }
-        public async Task Add(Todo entity)
+        public async Task Add(File entity)
         {
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Todo entity)
+        public async Task Delete(File entity)
         {
             _context.Remove(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<QueryResult<Todo>> GetAll(UserParams userParams)
+        public async Task<QueryResult<File>> GetAll(UserParams userParams)
         {
-            var query = _context.Todos.AsQueryable();
+            var query = _context.Files.AsQueryable();
 
-            var result = await PagedList<Todo>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
+            var result = await PagedList<File>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
         }
 
-        public async Task<Todo> GetById(Guid id)
+        public async Task<File>GetById(Guid id)
         {
-            var category = await _context.Todos.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _context.Files.FirstOrDefaultAsync(c => c.Id == id);
 
             return category;
         }
 
-        public async Task<QueryResult<Todo>> GetBySubCategoryId(Guid Id, UserParams userParams)
+        public async Task<QueryResult<File>> GetBySubCategoryId(Guid Id, UserParams userParams)
         {
-            var query = _context.Todos.
+            var query = _context.Files.
                 Where(s => s.SubCategoryId == Id).AsQueryable();
 
-            var result = await PagedList<Todo>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
+            var result = await PagedList<File>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
         }
 
-        public async Task Update(Todo entity)
+        public async Task Update(File entity)
         {
             _context.Update(entity);
             await _context.SaveChangesAsync();

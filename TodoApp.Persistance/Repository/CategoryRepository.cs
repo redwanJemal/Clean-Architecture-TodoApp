@@ -10,7 +10,7 @@ using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class CategoryRepository : IGenericRepository<Category>
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly TodoAppDbContext _context;
 
@@ -30,17 +30,9 @@ namespace TodoApp.Persistance.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Category>> GetAll()
-        {
-            var categories = await _context.Categories.
-                Include(c => c.SubCategories)
-                .ToListAsync();
-            return categories;
-        }
-
         public async Task<Category> GetById(Guid id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _context.Categories.Include(c => c.SubCategories).FirstOrDefaultAsync(c => c.Id == id);
             return category;
         }
 

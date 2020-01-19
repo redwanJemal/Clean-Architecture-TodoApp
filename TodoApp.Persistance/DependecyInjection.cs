@@ -29,14 +29,23 @@ namespace TodoApp.Persistance
         /// 
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IGenericService<CategoryModel>, CategoryService>();
-            services.AddScoped<IGenericRepository<Category>, CategoryRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddScoped<ISubCategoryService, SubCategoryService>();
             services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 
             services.AddScoped<ITodoService, TodoService>();
             services.AddScoped<ITodoRepository, TodoRepository>();
+
+            services.AddScoped<INoteService, NoteService>();
+            services.AddScoped<INoteRepository, NoteRepository>();
+
+            services.AddScoped<ILinkService, LinkService>();
+            services.AddScoped<ILinkRepository, LinkRepository>();
+
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IFileRepository, FileRepository>();
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new AutoMapperProfile());
