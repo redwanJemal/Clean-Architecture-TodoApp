@@ -7,27 +7,17 @@ using System.Threading.Tasks;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
 using TodoApp.Persistance.Helpers;
+using TodoApp.Persistance.Repository.Common;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class TodoRepository : ITodoRepository
+    public class TodoRepository : GenericRepository, ITodoRepository
     {
         private readonly TodoAppDbContext _context;
 
-        public TodoRepository(TodoAppDbContext context)
+        public TodoRepository(TodoAppDbContext context): base(context)
         {
             _context = context;
-        }
-        public async Task Add(Todo entity)
-        {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(Todo entity)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<QueryResult<Todo>> GetAll(UserParams userParams)
@@ -54,12 +44,6 @@ namespace TodoApp.Persistance.Repository
             var result = await PagedList<Todo>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
-        }
-
-        public async Task Update(Todo entity)
-        {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

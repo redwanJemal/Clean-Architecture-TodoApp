@@ -7,29 +7,18 @@ using System.Threading.Tasks;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
 using TodoApp.Persistance.Helpers;
+using TodoApp.Persistance.Repository.Common;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class NoteRepository : INoteRepository
+    public class NoteRepository : GenericRepository, INoteRepository
     {
         private readonly TodoAppDbContext _context;
 
-        public NoteRepository(TodoAppDbContext context)
+        public NoteRepository(TodoAppDbContext context): base(context)
         {
             _context = context;
         }
-        public async Task Add(Note entity)
-        {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(Note entity)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task<QueryResult<Note>> GetAll(UserParams userParams)
         {
             var query = _context.Notes.AsQueryable();
@@ -54,12 +43,6 @@ namespace TodoApp.Persistance.Repository
             var result = await PagedList<Note>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
-        }
-
-        public async Task Update(Note entity)
-        {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

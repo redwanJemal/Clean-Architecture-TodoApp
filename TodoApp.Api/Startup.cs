@@ -1,27 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using TodoApp.Application;
-using TodoApp.Application.Helpers;
-using TodoApp.Application.Services;
-using TodoApp.Application.ViewModel;
-using TodoApp.Domain.Entities;
-using TodoApp.Domain.Interface;
 using TodoApp.Persistance;
-using TodoApp.Persistance.Repository;
-
 namespace TodoApp.Api
 {
     public class Startup
@@ -37,7 +21,16 @@ namespace TodoApp.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("TodoAppPolicy", builder =>
+                 {
+                     builder.AllowAnyOrigin()
+                     .AllowAnyMethod()
+                     .AllowAnyHeader();
 
+                 });
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Todo App API", Version = "v1" });
@@ -56,7 +49,7 @@ namespace TodoApp.Api
             {
                 app.UseHsts();
             }
-
+            app.UseCors("TodoAppPolicy");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
