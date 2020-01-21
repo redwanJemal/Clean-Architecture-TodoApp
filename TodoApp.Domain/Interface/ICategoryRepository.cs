@@ -6,12 +6,9 @@ using TodoApp.Domain.Entities;
 
 namespace TodoApp.Domain.Interface
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository: IGenericRepository
     {
         Task<QueryResult<Category>> GetAll(UserParams userParams);
         Task<Category> GetById(Guid id);
-        Task Add(Category entity);
-        Task Update(Category entity);
-        Task Delete(Category entity);
     }
 }

@@ -6,13 +6,10 @@ using TodoApp.Domain.Entities;
 
 namespace TodoApp.Domain.Interface
 {
-    public interface IGenericRepository<T>
+    public interface IGenericRepository
     {
-        Task<QueryResult<T>> GetAll(UserParams userParams);
-        Task<List<T>> GetAll();
-        Task<T> GetById(Guid id);
-        Task Add(T entity);
-        Task Update(T entity);
-        Task Delete(T entity);
+        Task<bool> Add<T>(T entity) where T: class;
+        Task<bool> Update<T>(T entity) where T : class;
+        Task<bool> Delete<T>(T entity) where T : class;
     }
 }

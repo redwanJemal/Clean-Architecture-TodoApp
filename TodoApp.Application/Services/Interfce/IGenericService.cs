@@ -9,8 +9,6 @@ namespace TodoApp.Application.Services
 {
     public interface IGenericService<T>
     {
-        Task<List<T>> GetAll();
-        Task<QueryResult<T>> GetAll(UserParamsModel userParams);
         Task<T> GetById(Guid id);
         Task Add(T entity);
         Task Update(T entity);

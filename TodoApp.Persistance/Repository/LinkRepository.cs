@@ -7,29 +7,18 @@ using System.Threading.Tasks;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
 using TodoApp.Persistance.Helpers;
+using TodoApp.Persistance.Repository.Common;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class LinkRepository : ILinkRepository
+    public class LinkRepository : GenericRepository, ILinkRepository
     {
         private readonly TodoAppDbContext _context;
 
-        public LinkRepository(TodoAppDbContext context)
+        public LinkRepository(TodoAppDbContext context): base(context)
         {
             _context = context;
         }
-        public async Task Add(Link entity)
-        {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(Link entity)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task<QueryResult<Link>> GetAll(UserParams userParams)
         {
             var query = _context.Links.AsQueryable();
@@ -54,12 +43,6 @@ namespace TodoApp.Persistance.Repository
             var result = await PagedList<Link>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
-        }
-
-        public async Task Update(Link entity)
-        {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }
