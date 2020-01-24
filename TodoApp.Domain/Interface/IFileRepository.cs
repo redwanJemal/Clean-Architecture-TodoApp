@@ -6,10 +6,10 @@ using TodoApp.Domain.Entities;
 
 namespace TodoApp.Domain.Interface
 {
-    public interface IFileRepository : IGenericRepository
+    public interface IFileRepository : IGenericRepository<File>
     {
         Task<QueryResult<File>> GetAll(UserParams userParams);
-        Task<QueryResult<File>> GetBySubCategoryId(Guid Id, UserParams userParams);
         Task<File> GetById(Guid id);
+        Task<QueryResult<File>> GetBySubCategoryId(Guid Id, UserParams userParams);
     }
 }

@@ -6,10 +6,10 @@ using TodoApp.Domain.Entities;
 
 namespace TodoApp.Domain.Interface
 {
-    public interface ITodoRepository: IGenericRepository
+    public interface ITodoRepository: IGenericRepository<Todo>
     {
         Task<QueryResult<Todo>> GetAll(UserParams userParams);
-        Task<QueryResult<Todo>> GetBySubCategoryId(Guid Id, UserParams userParams);
         Task<Todo> GetById(Guid id);
+        Task<QueryResult<Todo>> GetBySubCategoryId(Guid Id, UserParams userParams);
     }
 }
