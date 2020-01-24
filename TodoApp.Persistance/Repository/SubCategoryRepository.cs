@@ -7,15 +7,14 @@ using System.Threading.Tasks;
 using TodoApp.Domain.Entities;
 using TodoApp.Domain.Interface;
 using TodoApp.Persistance.Helpers;
-using TodoApp.Persistance.Repository.Common;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class SubCategoryRepository : GenericRepository, ISubCategoryRepository
+    public class SubCategoryRepository :ISubCategoryRepository
     {
         private readonly TodoAppDbContext _context;
 
-        public SubCategoryRepository(TodoAppDbContext context) :base(context)
+        public SubCategoryRepository(TodoAppDbContext context)
         {
             _context = context;
         }
@@ -50,6 +49,24 @@ namespace TodoApp.Persistance.Repository
             var result = await PagedList<SubCategory>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
+        }
+
+        public async Task Add(SubCategory entity)
+        {
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Update(SubCategory entity)
+        {
+            _context.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Delete(SubCategory entity)
+        {
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }
