@@ -25,8 +25,18 @@ namespace TodoApp.Application.Services
 
         public LinkModel Add(LinkModel entity)
         {
-            var newEntity = _mapper.Map<Link>(entity);
-            return _mapper.Map<LinkModel>(_repo.Add(newEntity));
+            try
+            {
+                _repo.Add(_mapper.Map<Link>(entity));
+
+                UoW.Commit();
+                return entity;
+            }
+            catch (Exception)
+            {
+                UoW.RollBack();
+                return null;
+            }
         }
 
         public LinkModel Delete(Guid id)

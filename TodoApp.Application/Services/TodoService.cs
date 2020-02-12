@@ -25,8 +25,18 @@ namespace TodoApp.Application.Services
 
         public TodoModel Add(TodoModel entity)
         {
-            var newEntity = _mapper.Map<Todo>(entity);
-            return _mapper.Map<TodoModel>(_repo.Add(newEntity));
+            try
+            {
+                _repo.Add(_mapper.Map<Todo>(entity));
+
+                UoW.Commit();
+                return entity;
+            }
+            catch (Exception)
+            {
+                UoW.RollBack();
+                return null;
+            }
         }
 
         public TodoModel Delete(Guid id)
@@ -79,9 +89,9 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public TodoModel GetById(Guid id)
+        public async Task<TodoModel> GetById(Guid id)
         {
-            var entity = _repo.GetById(id);
+            var entity = await _repo.GetById(id);
             return _mapper.Map<TodoModel>(entity);
         }
 

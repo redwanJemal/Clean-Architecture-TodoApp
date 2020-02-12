@@ -24,8 +24,18 @@ namespace TodoApp.Application.Services
 
         public SubCategoryModel Add(SubCategoryModel entity)
         {
-            var newCategory = _mapper.Map<SubCategory>(entity);
-            return _mapper.Map<SubCategoryModel>(_repo.Add(newCategory));
+            try
+            {
+                _repo.Add(_mapper.Map<SubCategory>(entity));
+
+                UoW.Commit();
+                return entity;
+            }
+            catch (Exception)
+            {
+                UoW.RollBack();
+                return null;
+            }
         }
 
         public SubCategoryModel Delete(Guid id)
@@ -78,9 +88,9 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public SubCategoryModel GetById(Guid id)
+        public async Task<SubCategoryModel> GetById(Guid id)
         {
-            var subCategory = _repo.GetById(id);
+            var subCategory = await _repo.GetById(id);
             return _mapper.Map<SubCategoryModel>(subCategory);
         }
 

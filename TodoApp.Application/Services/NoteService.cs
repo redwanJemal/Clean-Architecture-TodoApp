@@ -25,8 +25,18 @@ namespace TodoApp.Application.Services
 
         public NoteModel Add(NoteModel entity)
         {
-            var newEntity = _mapper.Map<Note>(entity);
-            return _mapper.Map<NoteModel>(_repo.Add(newEntity));
+            try
+            {
+                _repo.Add(_mapper.Map<Note>(entity));
+
+                UoW.Commit();
+                return entity;
+            }
+            catch (Exception)
+            {
+                UoW.RollBack();
+                return null;
+            }
         }
 
         public NoteModel Delete(Guid id)
@@ -79,9 +89,9 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public NoteModel GetById(Guid id)
+        public async Task<NoteModel> GetById(Guid id)
         {
-            var entity = _repo.GetById(id);
+            var entity = await _repo.GetById(id);
             return _mapper.Map<NoteModel>(entity);
         }
 

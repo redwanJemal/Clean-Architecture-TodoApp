@@ -89,9 +89,9 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public FileModel GetById(Guid id)
+        public async Task<FileModel> GetById(Guid id)
         {
-            var entity = _repo.GetById(id);
+            var entity = await _repo.GetById(id);
             return _mapper.Map<FileModel>(entity);
         }
 

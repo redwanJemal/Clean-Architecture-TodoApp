@@ -10,7 +10,7 @@ namespace TodoApp.Application.Services.Interfce
     public interface ITodoService
     {
         Task<QueryResult<TodoModel>> GetAll(UserParamsModel userParams);
-        TodoModel GetById(Guid id);
+        Task<TodoModel> GetById(Guid id);
         TodoModel Add(TodoModel entity);
         TodoModel Update(TodoModel entity);
         TodoModel Delete(Guid id);

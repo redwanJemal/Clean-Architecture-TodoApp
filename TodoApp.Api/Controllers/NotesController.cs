@@ -44,9 +44,9 @@ namespace TodoApp.Api.Controllers
         }
 
         [HttpPost("get-by-Id/{id}")]
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var entity = _service.GetById(id);
+            var entity = await _service.GetById(id);
             return Ok(entity);
         }
 
