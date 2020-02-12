@@ -9,28 +9,45 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class SubCategoryService : ISubCategoryService
+    public class SubCategoryService : BaseService, ISubCategoryService
     {
         private readonly ISubCategoryRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public SubCategoryService(ISubCategoryRepository repo, IMapper mapper)
+        public SubCategoryService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _repo = uow.SubCategoryRepository;
             _mapper = mapper;
+            this.UoW = uow;
         }
 
-        public async Task Add(SubCategoryModel entity)
+        public SubCategoryModel Add(SubCategoryModel entity)
         {
             var newCategory = _mapper.Map<SubCategory>(entity);
-            await _repo.Add(newCategory);
+            return _mapper.Map<SubCategoryModel>(_repo.Add(newCategory));
         }
 
-        public async Task Delete(Guid id)
+        public SubCategoryModel Delete(Guid id)
         {
-            var category = await _repo.GetById(id);
-            await _repo.Delete(category);
+            try
+            {
+                SubCategory subCategory = _mapper.Map<SubCategory>(GetById(id));
+                if (subCategory != null)
+                {
+                    _repo.Delete(subCategory);
+
+                    this.UoW.Commit();
+                    return _mapper.Map<SubCategoryModel>(subCategory);
+                }
+            }
+            catch (Exception)
+            {
+                this.UoW.RollBack();
+                return null;
+            }
+
+            return null;
         }
 
         public async Task<QueryResult<SubCategoryModel>> GetAll(UserParamsModel userParams)
@@ -61,15 +78,32 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public async Task<SubCategoryModel> GetById(Guid id)
+        public SubCategoryModel GetById(Guid id)
         {
-            var subCategory = await _repo.GetById(id);
+            var subCategory = _repo.GetById(id);
             return _mapper.Map<SubCategoryModel>(subCategory);
         }
 
-        public async Task Update(SubCategoryModel entity)
+        public SubCategoryModel Update(SubCategoryModel entity)
         {
-            await _repo.Update(_mapper.Map<SubCategory>(entity));
+
+            if (entity != null)
+            {
+                try
+                {
+                    SubCategory subCategory = _mapper.Map<SubCategory>(entity);
+                    _repo.Update(subCategory);
+
+                    UoW.Commit();
+                    return entity;
+                }
+                catch (Exception)
+                {
+                    UoW.RollBack();
+                    return null;
+                }
+            }
+            return null;
         }
     }
 }

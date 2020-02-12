@@ -10,18 +10,18 @@ using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class SubCategoryRepository :ISubCategoryRepository
+    public class SubCategoryRepository : GenericRepository<SubCategory>, ISubCategoryRepository
     {
-        private readonly TodoAppDbContext _context;
+        public readonly DbSet<SubCategory> _subCategories;
 
-        public SubCategoryRepository(TodoAppDbContext context)
+        public SubCategoryRepository(TodoAppDbContext context): base(context)
         {
-            _context = context;
+            _subCategories = context.SubCategories;
         }
 
         public async Task<QueryResult<SubCategory>> GetAll(UserParams userParams)
         {
-            var query = _context.SubCategories.AsQueryable();
+            var query = _subCategories.AsQueryable();
 
             var result = await PagedList<SubCategory>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
@@ -30,7 +30,7 @@ namespace TodoApp.Persistance.Repository
 
         public async Task<SubCategory> GetById(Guid id)
         {
-            var category = await _context.SubCategories
+            var category = await _subCategories
                 .Include(s => s.Notes)
                 .Include(s => s.Todos)
                 .Include(s => s.Linkes)
@@ -41,7 +41,7 @@ namespace TodoApp.Persistance.Repository
 
         public async Task<QueryResult<SubCategory>> GetByCategoryId(Guid Id, UserParams userParams)
         {
-            var query = _context.SubCategories.
+            var query = _subCategories.
                 Where(s => s.CategoryId == Id)
                 .Include(s => s.Notes)
                 .Include(s => s.Todos).AsQueryable();
@@ -49,24 +49,6 @@ namespace TodoApp.Persistance.Repository
             var result = await PagedList<SubCategory>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
-        }
-
-        public async Task Add(SubCategory entity)
-        {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Update(SubCategory entity)
-        {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(SubCategory entity)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

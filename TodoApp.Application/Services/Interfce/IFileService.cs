@@ -10,10 +10,10 @@ namespace TodoApp.Application.Services.Interfce
     public interface IFileService
     {
         Task<QueryResult<FileModel>> GetAll(UserParamsModel userParams);
-        Task<FileModel> GetById(Guid id);
-        Task Add(FileModel entity);
-        Task Update(FileModel entity);
-        Task Delete(Guid id);
+        FileModel GetById(Guid id);
+        FileModel Add(FileModel entity);
+        FileModel Update(FileModel entity);
+        FileModel Delete(Guid id);
         Task<QueryResult<FileModel>> GetBySubCategoryId(Guid Id, UserParamsModel userParams);
     }
 }

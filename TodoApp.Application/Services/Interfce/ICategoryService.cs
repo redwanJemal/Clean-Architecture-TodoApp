@@ -11,8 +11,8 @@ namespace TodoApp.Application.Services
     {
         Task<QueryResult<CategoryModel>> GetAll(UserParamsModel userParams);
         Task<CategoryDetailModel> GetById(Guid id);
-        Task Add(CategoryModel entity);
-        Task Update(CategoryModel entity);
-        Task Delete(Guid id);
+        CategoryModel Add(CategoryModel entity);
+        CategoryModel Update(CategoryModel entity);
+        CategoryModel Delete(Guid id);
     }
 }

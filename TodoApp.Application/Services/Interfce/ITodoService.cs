@@ -10,10 +10,10 @@ namespace TodoApp.Application.Services.Interfce
     public interface ITodoService
     {
         Task<QueryResult<TodoModel>> GetAll(UserParamsModel userParams);
-        Task<TodoModel> GetById(Guid id);
-        Task Add(TodoModel entity);
-        Task Update(TodoModel entity);
-        Task Delete(Guid id);
+        TodoModel GetById(Guid id);
+        TodoModel Add(TodoModel entity);
+        TodoModel Update(TodoModel entity);
+        TodoModel Delete(Guid id);
         Task<QueryResult<TodoModel>> GetBySubCategoryId(Guid Id, UserParamsModel userParams);
     }
 }

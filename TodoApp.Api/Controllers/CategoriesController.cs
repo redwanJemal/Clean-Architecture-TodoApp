@@ -18,10 +18,10 @@ namespace TodoApp.Api.Controllers
             _service = service;
         }
         [HttpPost("add-category")]
-        public async Task<IActionResult> Create([FromBody]CategoryModel categoryModel)
+        public IActionResult Create([FromBody]CategoryModel categoryModel)
         {
-            await _service.Add(categoryModel);
-            return Ok(categoryModel);
+            CategoryModel category = _service.Add(categoryModel);
+            return Ok(category);
         }
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll([FromQuery]UserParamsModel userParams)
@@ -40,16 +40,16 @@ namespace TodoApp.Api.Controllers
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]CategoryModel categoryModel)
+        public IActionResult Update(Guid id, [FromBody]CategoryModel categoryModel)
         {
-            await _service.Update(categoryModel);
+            _service.Update(categoryModel);
             return NoContent();
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            await _service.Delete(id);
+            _service.Delete(id);
             return NoContent();
         }
     }
