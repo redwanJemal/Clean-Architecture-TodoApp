@@ -19,9 +19,9 @@ namespace TodoApp.Api.Controllers
             _service = service;
         }
         [HttpPost("add-link")]
-        public async Task<IActionResult> Create([FromBody]LinkModel model)
+        public IActionResult Create([FromBody]LinkModel model)
         {
-            await _service.Add(model);
+            _service.Add(model);
             return Ok(model);
         }
         [HttpGet("get-all")]
@@ -51,16 +51,16 @@ namespace TodoApp.Api.Controllers
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]LinkModel model)
+        public IActionResult Update(Guid id, [FromBody]LinkModel model)
         {
-            await _service.Update(model);
+            _service.Update(model);
             return NoContent();
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            await _service.Delete(id);
+            _service.Delete(id);
             return NoContent();
         }
     }

@@ -8,8 +8,9 @@ namespace TodoApp.Domain.Interface
 {
     public interface IGenericRepository<TEntity>
     {
-        Task Add(TEntity entity);
-        Task Update(TEntity entity);
-        Task Delete(TEntity entity);
+        //Task<TEntity> Query(string qlQuery);
+        TEntity Add(TEntity entity);
+        TEntity Update(TEntity entity);
+        TEntity Delete(TEntity entity);
     }
 }

@@ -10,28 +10,45 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class LinkService : ILinkService
+    public class LinkService : BaseService, ILinkService
     {
         private readonly ILinkRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public LinkService(ILinkRepository repo, IMapper mapper)
+        public LinkService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _repo = uow.LinkRepository;
             _mapper = mapper;
+            this.UoW = uow;
         }
 
-        public async Task Add(LinkModel entity)
+        public LinkModel Add(LinkModel entity)
         {
             var newEntity = _mapper.Map<Link>(entity);
-            await _repo.Add(newEntity);
+            return _mapper.Map<LinkModel>(_repo.Add(newEntity));
         }
 
-        public async Task Delete(Guid id)
+        public LinkModel Delete(Guid id)
         {
-            var entity = await _repo.GetById(id);
-            await _repo.Delete(entity);
+            try
+            {
+                Link link = _mapper.Map<Link>(GetById(id));
+                if (link != null)
+                {
+                    _repo.Delete(link);
+
+                    this.UoW.Commit();
+                    return _mapper.Map<LinkModel>(link);
+                }
+            }
+            catch (Exception)
+            {
+                this.UoW.RollBack();
+                return null;
+            }
+
+            return null;
         }
 
         public async Task<QueryResult<LinkModel>> GetAll(UserParamsModel userParams)
@@ -68,9 +85,25 @@ namespace TodoApp.Application.Services
             return _mapper.Map<LinkModel>(entity);
         }
 
-        public async Task Update(LinkModel entity)
+        public LinkModel Update(LinkModel entity)
         {
-            await _repo.Update(_mapper.Map<Link>(entity));
+            if (entity != null)
+            {
+                try
+                {
+                    Link link = _mapper.Map<Link>(entity);
+                    _repo.Update(link);
+
+                    UoW.Commit();
+                    return entity;
+                }
+                catch (Exception)
+                {
+                    UoW.RollBack();
+                    return null;
+                }
+            }
+            return null;
         }
     }
 }

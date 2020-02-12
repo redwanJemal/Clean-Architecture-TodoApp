@@ -10,36 +10,19 @@ using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class NoteRepository : INoteRepository
+    public class NoteRepository : GenericRepository<Note>, INoteRepository
     {
-        private readonly TodoAppDbContext _context;
+        private readonly DbSet<Note> _notes;
 
-        public NoteRepository(TodoAppDbContext context)
-        {
-            _context = context;
-        }
 
-        public async Task Add(Note entity)
+        public NoteRepository(TodoAppDbContext context): base(context)
         {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Update(Note entity)
-        {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(Note entity)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
+            _notes = context.Notes;
         }
 
         public async Task<QueryResult<Note>> GetAll(UserParams userParams)
         {
-            var query = _context.Notes.AsQueryable();
+            var query = _notes.AsQueryable();
 
             var result = await PagedList<Note>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
@@ -48,14 +31,14 @@ namespace TodoApp.Persistance.Repository
 
         public async Task<Note> GetById(Guid id)
         {
-            var category = await _context.Notes.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _notes.FirstOrDefaultAsync(c => c.Id == id);
 
             return category;
         }
 
         public async Task<QueryResult<Note>> GetBySubCategoryId(Guid Id, UserParams userParams)
         {
-            var query = _context.Notes.
+            var query = _notes.
                 Where(s => s.SubCategoryId == Id).AsQueryable();
 
             var result = await PagedList<Note>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);

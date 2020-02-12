@@ -10,30 +10,18 @@ using TodoApp.Persistance.Helpers;
 
 namespace TodoApp.Persistance.Repository
 {
-    public class LinkRepository : ILinkRepository
+    public class LinkRepository : GenericRepository<Link>, ILinkRepository
     {
-        private readonly TodoAppDbContext _context;
+        private readonly DbSet<Link> _links;
 
-        public LinkRepository(TodoAppDbContext context)
+        public LinkRepository(TodoAppDbContext context): base(context)
         {
-            _context = context;
-        }
-
-        public async Task Add(Link entity)
-        {
-            await _context.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(Link entity)
-        {
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
+            _links = context.Links;
         }
 
         public async Task<QueryResult<Link>> GetAll(UserParams userParams)
         {
-            var query = _context.Links.AsQueryable();
+            var query = _links.AsQueryable();
 
             var result = await PagedList<Link>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
@@ -42,25 +30,19 @@ namespace TodoApp.Persistance.Repository
 
         public async Task<Link>GetById(Guid id)
         {
-            var category = await _context.Links.FirstOrDefaultAsync(c => c.Id == id);
+            var category = await _links.FirstOrDefaultAsync(c => c.Id == id);
 
             return category;
         }
 
         public async Task<QueryResult<Link>> GetBySubCategoryId(Guid Id, UserParams userParams)
         {
-            var query = _context.Links.
+            var query = _links.
                 Where(s => s.SubCategoryId == Id).AsQueryable();
 
             var result = await PagedList<Link>.ApplyPaging(query, userParams.PageNumber, userParams.PageSize);
 
             return result;
-        }
-
-        public async Task Update(Link entity)
-        {
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

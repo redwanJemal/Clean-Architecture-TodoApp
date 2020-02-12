@@ -9,27 +9,74 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class CategoryService : ICategoryService
+    public class CategoryService: BaseService, ICategoryService
     {
         private readonly ICategoryRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public CategoryService(ICategoryRepository repo, IMapper mapper)
+        public CategoryService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _repo = uow.CategoryRepository;
             _mapper = mapper;
+            this.UoW = uow;
         }
-        public async Task Add(CategoryModel entity)
+        public CategoryModel Add(CategoryModel entity)
         {
-            var newCategory = _mapper.Map<Category>(entity);
-            await _repo.Add(newCategory);
+            try
+            {
+                _repo.Add(_mapper.Map<Category>(entity));
+
+                UoW.Commit();
+                return entity;
+            }
+            catch (Exception)
+            {
+                UoW.RollBack();
+                return null;
+            }
         }
 
-        public async Task Delete(Guid id)
+        public CategoryModel Update(CategoryModel entity)
         {
-            var category = await _repo.GetById(id);
-            await _repo.Delete(category);
+            if (entity != null)
+            {
+                try
+                {
+                    Category category = _mapper.Map<Category>(entity);
+                    _repo.Update(category);
+
+                    UoW.Commit();
+                    return entity;
+                }
+                catch (Exception)
+                {
+                    UoW.RollBack();
+                    return null;
+                }
+            }
+            return null;
+        }
+        public CategoryModel Delete(Guid id)
+        {
+            try
+            {
+                Category category = _mapper.Map<Category>(GetById(id));
+                if (category != null)
+                {
+                    _repo.Delete(category);
+
+                    this.UoW.Commit();
+                    return _mapper.Map<CategoryModel>(category);
+                }
+            }
+            catch (Exception)
+            {
+                this.UoW.RollBack();
+                return null;
+            }
+
+            return null;
         }
 
         public async Task<QueryResult<CategoryModel>> GetAll(UserParamsModel userParams)
@@ -53,9 +100,5 @@ namespace TodoApp.Application.Services
             return _mapper.Map<CategoryDetailModel>(category);
         }
 
-        public async Task Update(CategoryModel entity)
-        {
-            await _repo.Update(_mapper.Map<Category>(entity));
-        }
     }
 }

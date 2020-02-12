@@ -11,9 +11,9 @@ namespace TodoApp.Application.Services.Interfce
     {
         Task<QueryResult<LinkModel>> GetAll(UserParamsModel userParams);
         Task<LinkModel> GetById(Guid id);
-        Task Add(LinkModel entity);
-        Task Update(LinkModel entity);
-        Task Delete(Guid id);
+        LinkModel Add(LinkModel entity);
+        LinkModel Update(LinkModel entity);
+        LinkModel Delete(Guid id);
         Task<QueryResult<LinkModel>> GetBySubCategoryId(Guid Id, UserParamsModel userParams);
     }
 }

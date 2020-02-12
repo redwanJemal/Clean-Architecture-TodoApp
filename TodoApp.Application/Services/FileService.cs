@@ -10,28 +10,55 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class FileService : IFileService
+    public class FileService : BaseService, IFileService
     {
-        private readonly ITodoRepository _repo;
+        private readonly IFileRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public FileService(ITodoRepository repo, IMapper mapper)
+        public FileService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _repo = uow.FileRepository;
             _mapper = mapper;
+            this.UoW = uow;
         }
 
-        public async Task Add(FileModel entity)
+        public FileModel Add(FileModel entity)
         {
-            var newEntity = _mapper.Map<Todo>(entity);
-            await _repo.Add(newEntity);
+            try
+            {
+                _repo.Add(_mapper.Map<File>(entity));
+
+                UoW.Commit();
+                return entity;
+            }
+            catch (Exception)
+            {
+                UoW.RollBack();
+                return null;
+            }
         }
 
-        public async Task Delete(Guid id)
+        public FileModel Delete(Guid id)
         {
-            var entity = await _repo.GetById(id);
-            await _repo.Delete(entity);
+            try
+            {
+                File category = _mapper.Map<File>(GetById(id));
+                if (category != null)
+                {
+                    _repo.Delete(category);
+
+                    this.UoW.Commit();
+                    return _mapper.Map<FileModel>(category);
+                }
+            }
+            catch (Exception)
+            {
+                this.UoW.RollBack();
+                return null;
+            }
+
+            return null;
         }
 
         public async Task<QueryResult<FileModel>> GetAll(UserParamsModel userParams)
@@ -39,7 +66,7 @@ namespace TodoApp.Application.Services
             var result = new QueryResult<FileModel>();
             var subCategories = await _repo.GetAll(_mapper.Map<UserParams>(userParams));
 
-            List<FileModel> categoryModels = _mapper.Map<List<Todo>, List<FileModel>>(subCategories.Items);
+            List<FileModel> categoryModels = _mapper.Map<List<File>, List<FileModel>>(subCategories.Items);
 
             result.Items = categoryModels;
             result.TotalItems = subCategories.TotalItems;
@@ -52,7 +79,7 @@ namespace TodoApp.Application.Services
         {
             var result = new QueryResult<FileModel>();
             var entities = await _repo.GetBySubCategoryId(Id, _mapper.Map<UserParams>(userParams));
-            List<FileModel> models = _mapper.Map<List<Todo>, List<FileModel>>(entities.Items);
+            List<FileModel> models = _mapper.Map<List<File>, List<FileModel>>(entities.Items);
 
             result.Items = models;
             result.TotalItems = entities.TotalItems;
@@ -62,15 +89,31 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public async Task<FileModel> GetById(Guid id)
+        public FileModel GetById(Guid id)
         {
-            var entity = await _repo.GetById(id);
+            var entity = _repo.GetById(id);
             return _mapper.Map<FileModel>(entity);
         }
 
-        public async Task Update(FileModel entity)
+        public FileModel Update(FileModel entity)
         {
-            await _repo.Update(_mapper.Map<Todo>(entity));
+            if (entity != null)
+            {
+                try
+                {
+                    File category = _mapper.Map<File>(entity);
+                    _repo.Update(category);
+
+                    UoW.Commit();
+                    return entity;
+                }
+                catch (Exception)
+                {
+                    UoW.RollBack();
+                    return null;
+                }
+            }
+            return null;
         }
     }
 }

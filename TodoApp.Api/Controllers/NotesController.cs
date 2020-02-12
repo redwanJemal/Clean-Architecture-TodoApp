@@ -19,9 +19,9 @@ namespace TodoApp.Api.Controllers
             _service = service;
         }
         [HttpPost("add-note")]
-        public async Task<IActionResult> Create([FromBody]NoteModel model)
+        public IActionResult Create([FromBody]NoteModel model)
         {
-            await _service.Add(model);
+            _service.Add(model);
             return Ok(model);
         }
         [HttpGet("get-all")]
@@ -44,23 +44,23 @@ namespace TodoApp.Api.Controllers
         }
 
         [HttpPost("get-by-Id/{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public IActionResult GetById(Guid id)
         {
-            var entity = await _service.GetById(id);
+            var entity = _service.GetById(id);
             return Ok(entity);
         }
 
         [HttpPost("update/{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]NoteModel model)
+        public IActionResult Update(Guid id, [FromBody]NoteModel model)
         {
-            await _service.Update(model);
+            _service.Update(model);
             return NoContent();
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            await _service.Delete(id);
+            _service.Delete(id);
             return NoContent();
         }
     }

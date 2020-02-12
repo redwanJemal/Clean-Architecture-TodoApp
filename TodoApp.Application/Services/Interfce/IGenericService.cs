@@ -7,10 +7,10 @@ using TodoApp.Domain.Entities;
 
 namespace TodoApp.Application.Services
 {
-    public interface IGenericService
+    public interface IGenericService<TEntity> where TEntity : class
     {
-        Task<T> Add<T>(T entity) where T : class;
-        Task<T> Update<T>(T entity) where T : class;
-        Task<T> Delete<T>(Guid id) where T : class;
+        TEntity Add(TEntity entity);
+        TEntity Update(TEntity entity);
+        TEntity Delete(Guid id);
     }
 }

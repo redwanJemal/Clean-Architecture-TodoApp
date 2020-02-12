@@ -10,28 +10,45 @@ using TodoApp.Domain.Interface;
 
 namespace TodoApp.Application.Services
 {
-    public class NoteService: INoteService
+    public class NoteService : BaseService, INoteService
     {
         private readonly INoteRepository _repo;
         private readonly IMapper _mapper;
 
 
-        public NoteService(INoteRepository repo, IMapper mapper)
+        public NoteService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _repo = uow.NoteRepository;
             _mapper = mapper;
+            this.UoW = uow;
         }
 
-        public async Task Add(NoteModel entity)
+        public NoteModel Add(NoteModel entity)
         {
             var newEntity = _mapper.Map<Note>(entity);
-            await _repo.Add(newEntity);
+            return _mapper.Map<NoteModel>(_repo.Add(newEntity));
         }
 
-        public async Task Delete(Guid id)
+        public NoteModel Delete(Guid id)
         {
-            var entity = await _repo.GetById(id);
-            await _repo.Delete(entity);
+            try
+            {
+                Note link = _mapper.Map<Note>(GetById(id));
+                if (link != null)
+                {
+                    _repo.Delete(link);
+
+                    this.UoW.Commit();
+                    return _mapper.Map<NoteModel>(link);
+                }
+            }
+            catch (Exception)
+            {
+                this.UoW.RollBack();
+                return null;
+            }
+
+            return null;
         }
 
         public async Task<QueryResult<NoteModel>> GetAll(UserParamsModel userParams)
@@ -62,15 +79,31 @@ namespace TodoApp.Application.Services
             return result;
         }
 
-        public async Task<NoteModel> GetById(Guid id)
+        public NoteModel GetById(Guid id)
         {
-            var entity = await _repo.GetById(id);
+            var entity = _repo.GetById(id);
             return _mapper.Map<NoteModel>(entity);
         }
 
-        public async Task Update(NoteModel entity)
+        public NoteModel Update(NoteModel entity)
         {
-            await _repo.Update(_mapper.Map<Note>(entity));
+            if (entity != null)
+            {
+                try
+                {
+                    Note link = _mapper.Map<Note>(entity);
+                    _repo.Update(link);
+
+                    UoW.Commit();
+                    return entity;
+                }
+                catch (Exception)
+                {
+                    UoW.RollBack();
+                    return null;
+                }
+            }
+            return null;
         }
     }
 }
