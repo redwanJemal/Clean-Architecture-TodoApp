@@ -10,7 +10,7 @@ namespace TodoApp.Application.Services.Interfce
     public interface INoteService
     {
         Task<QueryResult<NoteModel>> GetAll(UserParamsModel userParams);
-        NoteModel GetById(Guid id);
+        Task<NoteModel> GetById(Guid id);
         NoteModel Add(NoteModel entity);
         NoteModel Update(NoteModel entity);
         NoteModel Delete(Guid id);
